@@ -1,0 +1,14 @@
+/* Conditionally build code to correct all Jobs not owned by the sa login then review the output before executing the code 
+in another SQL Server session to correct the SQL Server Agent Job ownership */
+
+
+SET NOCOUNT ON
+
+SELECT 'EXEC MSDB.dbo.sp_update_job ' + char(13) +
+'@job_name = ' + char(39) + j.[Name] + char(39) + ',' + char(13) + 
+'@owner_login_name = ' + char(39) + 'sa' + char(39) + char(13) + char(13)
+FROM MSDB.dbo.sysjobs j
+INNER JOIN Master.dbo.syslogins l
+ON j.owner_sid = l.sid
+WHERE l.[name] <> 'sa' 
+ORDER BY j.[name]
