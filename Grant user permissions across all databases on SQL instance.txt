@@ -1,0 +1,12 @@
+declare @command VARCHAR(1000);
+
+SET @command = 'IF ''?'' NOT IN (''master'',''model'',''msdb'',''tempdb'') 
+BEGIN
+USE ?
+IF NOT EXISTS (select * from sys.database_principals where name = ''DOMAIN\UserName'')
+CREATE USER [DOMAIN\UserName] FOR LOGIN [DOMAIN\UserName]
+
+ALTER ROLE [db_datareader] ADD MEMBER [DOMAIN\UserName]
+END'
+
+exec sp_msforeachdb @command
