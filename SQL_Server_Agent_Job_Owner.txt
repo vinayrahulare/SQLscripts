@@ -1,0 +1,23 @@
+/* SQL Server Agent Job Ownership */
+/* The script below will return the SQL Server Agent Job name, whether or not the job is enabled or not and the current job owner.  
+Once you run this code it would be wise to save the results as a point of reference.This query can also be customized to meet your needs 
+if you only want to find non-compliant job owners based on logic in your environment.  Just add a WHERE clause to meet your needs. */
+
+USE MSDB
+GO
+SELECT GETDATE() AS 'ExecutionTime'
+GO
+SELECT @@SERVERNAME AS 'SQLServerInstance'
+GO
+SELECT j.[name] AS 'JobName', 
+Enabled = CASE WHEN j.Enabled = 0 THEN 'No'
+ELSE 'Yes'
+END,
+l.[name] AS 'OwnerName'
+FROM MSDB.dbo.sysjobs j
+INNER JOIN Master.dbo.syslogins l
+ON j.owner_sid = l.sid
+ORDER BY j.[name] 
+GO
+
+
